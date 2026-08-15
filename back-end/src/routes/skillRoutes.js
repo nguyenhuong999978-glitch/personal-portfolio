@@ -1,23 +1,19 @@
-import express from 'express'
+const express = require('express')
 
-import {
+const {
   getSkills,
   getSkillById,
   createSkill,
   updateSkill,
   deleteSkill,
-} from '../controllers/skillController.js'
+} = require('../controllers/skillController')
 
 const router = express.Router()
 
 router.get('/', getSkills)
-
 router.get('/:id', getSkillById)
-
 router.post('/', createSkill)
-
 router.put('/:id', updateSkill)
-
 router.delete('/:id', deleteSkill)
 
-export default router
+module.exports = router

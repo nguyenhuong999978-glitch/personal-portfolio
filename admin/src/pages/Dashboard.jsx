@@ -1,92 +1,98 @@
+import { useEffect, useState } from 'react'
+
 import {
-  Card,
-  Col,
   Row,
+  Col,
+  Card,
   Statistic,
   Table,
+  Progress,
   Tag,
-  Empty,
+  Typography,
+  Space,
   Spin,
-  Alert,
+  Empty,
 } from 'antd'
 
 import {
-  ProjectOutlined,
   CodeOutlined,
-  UserOutlined,
+  ProjectOutlined,
+  TrophyOutlined,
+  RiseOutlined,
 } from '@ant-design/icons'
 
-import { useEffect, useState } from 'react'
 
-const API_URL = 'http://localhost:5000/api'
+const SKILLS_API =
+  'http://localhost:5000/api/skills'
+
+const PROJECTS_API =
+  'http://localhost:5000/api/projects'
+
+
+const { Title, Text } = Typography
+
 
 function Dashboard() {
 
-  const [profile, setProfile] = useState(null)
-  const [projects, setProjects] = useState([])
   const [skills, setSkills] = useState([])
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [projects, setProjects] = useState([])
+
+  const [loading, setLoading] =
+    useState(true)
+
+
+  // =========================
+  // LOAD DATA
+  // =========================
 
   useEffect(() => {
 
-    const loadDashboard = async () => {
+    const fetchDashboardData = async () => {
 
       try {
 
         setLoading(true)
-        setError('')
 
         const [
-          profileResponse,
-          projectsResponse,
           skillsResponse,
+          projectsResponse,
         ] = await Promise.all([
-          fetch(`${API_URL}/profile`),
-          fetch(`${API_URL}/projects`),
-          fetch(`${API_URL}/skills`),
+          fetch(SKILLS_API),
+          fetch(PROJECTS_API),
         ])
 
-        if (
-          !profileResponse.ok ||
-          !projectsResponse.ok ||
-          !skillsResponse.ok
-        ) {
+
+        if (!skillsResponse.ok) {
           throw new Error(
-            'Không thể lấy dữ liệu từ Backend'
+            'Không thể lấy skills'
           )
         }
 
-        const profileData =
-          await profileResponse.json()
 
-        const projectsData =
-          await projectsResponse.json()
+        if (!projectsResponse.ok) {
+          throw new Error(
+            'Không thể lấy projects'
+          )
+        }
+
 
         const skillsData =
           await skillsResponse.json()
 
-        setProfile(profileData)
-        setProjects(
-          Array.isArray(projectsData)
-            ? projectsData
-            : []
-        )
+        const projectsData =
+          await projectsResponse.json()
 
-        setSkills(
-          Array.isArray(skillsData)
-            ? skillsData
-            : []
-        )
+
+        setSkills(skillsData)
+
+        setProjects(projectsData)
 
       } catch (error) {
 
-        console.error(error)
-
-        setError(
-          error.message ||
-          'Có lỗi xảy ra khi tải Dashboard'
+        console.error(
+          'Dashboard error:',
+          error
         )
 
       } finally {
@@ -96,104 +102,200 @@ function Dashboard() {
       }
     }
 
-    loadDashboard()
+
+    fetchDashboardData()
 
   }, [])
 
-  const columns = [
-    {
-      title: '#',
-      key: 'index',
-      width: 60,
-      render: (_, __, index) =>
-        index + 1,
-    },
+
+  // =========================
+  // STATISTICS
+  // =========================
+
+  const totalSkills =
+    skills.length
+
+
+  const totalProjects =
+    projects.length
+
+
+  const averageSkill =
+    totalSkills > 0
+      ? Math.round(
+          skills.reduce(
+            (total, skill) =>
+              total + skill.percent,
+            0
+          ) / totalSkills
+        )
+      : 0
+
+
+  const highestSkill =
+    totalSkills > 0
+      ? Math.max(
+          ...skills.map(
+            (skill) => skill.percent
+          )
+        )
+      : 0
+
+
+  // =========================
+  // SKILL TABLE
+  // =========================
+
+  const skillColumns = [
 
     {
-      title: 'Tên dự án',
+      title: 'Kỹ năng',
+
       dataIndex: 'name',
+
       key: 'name',
+
+      render: (name) => (
+        <Space>
+
+          <CodeOutlined />
+
+          <strong>
+            {name}
+          </strong>
+
+        </Space>
+      ),
     },
+
+
+    {
+      title: 'Mức độ',
+
+      dataIndex: 'percent',
+
+      key: 'percent',
+
+      width: 300,
+
+      render: (percent) => (
+
+        <Progress
+          percent={percent}
+          size="small"
+        />
+
+      ),
+    },
+
+
+    {
+      title: '%',
+
+      dataIndex: 'percent',
+
+      key: 'percentText',
+
+      width: 70,
+
+      render: (percent) => (
+        <Tag color="blue">
+          {percent}%
+        </Tag>
+      ),
+    },
+
+  ]
+
+
+  // =========================
+  // PROJECT TABLE
+  // =========================
+
+  const projectColumns = [
+
+    {
+      title: 'Dự án',
+
+      dataIndex: 'name',
+
+      key: 'name',
+
+      render: (name) => (
+
+        <Space>
+
+          <ProjectOutlined />
+
+          <strong>
+            {name}
+          </strong>
+
+        </Space>
+
+      ),
+    },
+
 
     {
       title: 'Công nghệ',
+
       dataIndex: 'technology',
+
       key: 'technology',
 
-      render: (technology) => {
+      render: (technology = []) => (
 
-        if (!Array.isArray(technology)) {
-          return '-'
-        }
+        <Space
+          wrap
+          size={[4, 4]}
+        >
 
-        return (
-          <>
-            {technology.map((item) => (
-              <Tag key={item}>
-                {item}
+          {technology.map(
+            (tech) => (
+
+              <Tag key={tech}>
+                {tech}
               </Tag>
-            ))}
-          </>
-        )
-      },
+
+            )
+          )}
+
+        </Space>
+
+      ),
     },
 
-    {
-      title: 'Demo',
-      dataIndex: 'demo',
-      key: 'demo',
-
-      render: (demo) => {
-
-        if (!demo || demo === '#') {
-          return '-'
-        }
-
-        return (
-          <a
-            href={demo}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Xem
-          </a>
-        )
-      },
-    },
   ]
 
+
   if (loading) {
+
     return (
+
       <div
         style={{
-          minHeight: 300,
+          minHeight: 400,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
+
         <Spin size="large" />
+
       </div>
+
     )
   }
 
+
   return (
+
     <div className="dashboard-page">
 
-      {error && (
-        <Alert
-          type="error"
-          showIcon
-          message="Không thể tải dữ liệu"
-          description={error}
-          style={{
-            marginBottom: 24,
-          }}
-        />
-      )}
-
       {/* =========================
-          TITLE
+          HEADER
       ========================= */}
 
       <div
@@ -201,23 +303,20 @@ function Dashboard() {
           marginBottom: 24,
         }}
       >
-        <h1
+
+        <Title
+          level={2}
           style={{
-            marginBottom: 6,
-            fontSize: 24,
+            marginBottom: 4,
           }}
         >
           Dashboard
-        </h1>
+        </Title>
 
-        <p
-          style={{
-            margin: 0,
-            color: '#8c8c8c',
-          }}
-        >
-          Tổng quan hệ thống Portfolio
-        </p>
+        <Text type="secondary">
+          Tổng quan hệ thống quản trị Portfolio
+        </Text>
+
       </div>
 
 
@@ -235,90 +334,255 @@ function Dashboard() {
         <Col
           xs={24}
           sm={12}
-          lg={8}
+          xl={6}
         >
+
           <Card>
 
             <Statistic
-              title="Thông tin cá nhân"
-              value={profile ? 1 : 0}
-              prefix={<UserOutlined />}
-              suffix="hồ sơ"
-            />
-
-          </Card>
-        </Col>
-
-
-        <Col
-          xs={24}
-          sm={12}
-          lg={8}
-        >
-          <Card>
-
-            <Statistic
-              title="Dự án"
-              value={projects.length}
-              prefix={<ProjectOutlined />}
+              title="Tổng dự án"
+              value={totalProjects}
+              prefix={
+                <ProjectOutlined />
+              }
               suffix="dự án"
             />
 
           </Card>
+
         </Col>
 
 
         <Col
           xs={24}
           sm={12}
-          lg={8}
+          xl={6}
         >
+
           <Card>
 
             <Statistic
-              title="Kỹ năng"
-              value={skills.length}
-              prefix={<CodeOutlined />}
+              title="Tổng kỹ năng"
+              value={totalSkills}
+              prefix={
+                <CodeOutlined />
+              }
               suffix="kỹ năng"
             />
 
           </Card>
+
+        </Col>
+
+
+        <Col
+          xs={24}
+          sm={12}
+          xl={6}
+        >
+
+          <Card>
+
+            <Statistic
+              title="Mức kỹ năng trung bình"
+              value={averageSkill}
+              prefix={
+                <RiseOutlined />
+              }
+              suffix="%"
+            />
+
+          </Card>
+
+        </Col>
+
+
+        <Col
+          xs={24}
+          sm={12}
+          xl={6}
+        >
+
+          <Card>
+
+            <Statistic
+              title="Kỹ năng cao nhất"
+              value={highestSkill}
+              prefix={
+                <TrophyOutlined />
+              }
+              suffix="%"
+            />
+
+          </Card>
+
         </Col>
 
       </Row>
 
 
       {/* =========================
-          PROJECTS
+          CONTENT
       ========================= */}
 
-      <Card
-        title="Danh sách dự án"
+      <Row
+        gutter={[
+          16,
+          16,
+        ]}
         style={{
-          marginTop: 24,
+          marginTop: 16,
         }}
       >
 
-        {projects.length > 0 ? (
+        {/* SKILLS */}
 
-          <Table
-            rowKey={(record) =>
-              record._id || record.id
+        <Col
+          xs={24}
+          xl={14}
+        >
+
+          <Card
+            title="Kỹ năng"
+            extra={
+              <Text type="secondary">
+                {totalSkills} kỹ năng
+              </Text>
             }
-            columns={columns}
-            dataSource={projects}
-            pagination={{
-              pageSize: 5,
-            }}
-            scroll={{
-              x: 600,
-            }}
-          />
+          >
+
+            {skills.length > 0 ? (
+
+              <Table
+                rowKey="_id"
+                columns={skillColumns}
+                dataSource={skills}
+                pagination={false}
+              />
+
+            ) : (
+
+              <Empty
+                description="Chưa có kỹ năng"
+              />
+
+            )}
+
+          </Card>
+
+        </Col>
+
+
+        {/* PROJECTS */}
+
+        <Col
+          xs={24}
+          xl={10}
+        >
+
+          <Card
+            title="Dự án"
+            extra={
+              <Text type="secondary">
+                {totalProjects} dự án
+              </Text>
+            }
+          >
+
+            {projects.length > 0 ? (
+
+              <Table
+                rowKey="_id"
+                columns={projectColumns}
+                dataSource={projects}
+                pagination={false}
+              />
+
+            ) : (
+
+              <Empty
+                description="Chưa có dự án"
+              />
+
+            )}
+
+          </Card>
+
+        </Col>
+
+      </Row>
+
+
+      {/* =========================
+          SKILL OVERVIEW
+      ========================= */}
+
+      <Card
+        title="Tổng quan kỹ năng"
+        style={{
+          marginTop: 16,
+        }}
+      >
+
+        {skills.length > 0 ? (
+
+          <Row
+            gutter={[
+              24,
+              20,
+            ]}
+          >
+
+            {skills.map((skill) => (
+
+              <Col
+                xs={24}
+                sm={12}
+                lg={8}
+                key={skill._id}
+              >
+
+                <div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent:
+                        'space-between',
+                      marginBottom: 6,
+                    }}
+                  >
+
+                    <Text strong>
+                      {skill.name}
+                    </Text>
+
+                    <Text>
+                      {skill.percent}%
+                    </Text>
+
+                  </div>
+
+
+                  <Progress
+                    percent={
+                      skill.percent
+                    }
+                    showInfo={false}
+                  />
+
+                </div>
+
+              </Col>
+
+            ))}
+
+          </Row>
 
         ) : (
 
           <Empty
-            description="Chưa có dự án"
+            description="Chưa có dữ liệu kỹ năng"
           />
 
         )}
@@ -326,7 +590,9 @@ function Dashboard() {
       </Card>
 
     </div>
+
   )
 }
+
 
 export default Dashboard

@@ -147,6 +147,19 @@ function AdminLayout({ children }) {
     return items
   }
 
+  const handleLogout = () => {
+
+  localStorage.removeItem(
+    'adminToken'
+  )
+
+  localStorage.removeItem(
+    'adminUser'
+  )
+
+  navigate('/admin/login')
+}
+
   return (
     <Layout className="admin-layout">
 
@@ -189,9 +202,11 @@ function AdminLayout({ children }) {
             type="text"
             icon={<LogoutOutlined />}
             className="logout-button"
+            onClick={handleLogout}
           >
             {!collapsed && 'Đăng xuất'}
           </Button>
+          
 
         </div>
 

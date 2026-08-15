@@ -6,21 +6,15 @@ import {
 
 import AdminLayout from './layouts/AdminLayout'
 
-function Dashboard() {
-  return <h1>Dashboard</h1>
-}
+import Skills from './pages/Skills'
+import Projects from './pages/Projects'
+import Dashboard from './pages/Dashboard'
+import Login from './pages/Login'
 
 function Profile() {
   return <h1>Thông tin cá nhân</h1>
 }
 
-function Skills() {
-  return <h1>Kỹ năng</h1>
-}
-
-function Projects() {
-  return <h1>Dự án</h1>
-}
 function Settings() {
   return <h1>Cài đặt</h1>
 }
@@ -32,6 +26,13 @@ function App() {
       <AdminLayout>
 
         <Routes>
+
+          {/* LOGIN */}
+
+          <Route
+            path="/admin/login"
+            element={<Login />}
+          />
 
           <Route
             path="/admin"
