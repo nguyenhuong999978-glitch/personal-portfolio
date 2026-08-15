@@ -1,0 +1,85 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================================
+   COLOR VARIABLES
+========================================================= */
+
+:root {
+  --bg-color: #ffffff;
+
+  --section-bg: #f8fafc;
+
+  --card-bg: #ffffff;
+
+  --navbar-bg: #ffffff;
+
+  --text-color: #0f172a;
+
+  --text-secondary: #64748b;
+
+  --primary-color: #2563eb;
+
+  --primary-hover: #1d4ed8;
+
+  --border-color: #e2e8f0;
+
+  --footer-bg: #0f172a;
+
+  --footer-text: #cbd5e1;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+
+  background-color: var(--bg-color);
+  color: var(--text-color);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+.dark-mode {
+  --bg-color: #0f172a;
+
+  --section-bg: #111827;
+
+  --card-bg: #1e293b;
+
+  --navbar-bg: #0f172a;
+
+  --text-color: #f8fafc;
+
+  --text-secondary: #cbd5e1;
+
+  --primary-color: #60a5fa;
+
+  --primary-hover: #93c5fd;
+
+  --border-color: #334155;
+
+  --footer-bg: #020617;
+
+  --footer-text: #cbd5e1;
+}
