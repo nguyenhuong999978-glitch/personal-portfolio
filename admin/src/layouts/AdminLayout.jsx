@@ -8,7 +8,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   BellOutlined,
-} from '@ant-design/icons'
+} from "@ant-design/icons";
 
 import {
   Layout,
@@ -18,151 +18,205 @@ import {
   Button,
   Badge,
   Divider,
-} from 'antd'
+  Dropdown,
+} from "antd";
 
-import {
-  useNavigate,
-  useLocation,
-} from 'react-router-dom'
+import { useNavigate, useLocation } from "react-router-dom";
 
-import { useState } from 'react'
+import { useState } from "react";
 
-import './AdminLayout.css'
+import "./AdminLayout.css";
 
-const { Header, Sider, Content } = Layout
+const { Header, Sider, Content } = Layout;
 
 function AdminLayout({ children }) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(false);
 
   const menuItems = [
-
     {
-      type: 'group',
-      label: 'TỔNG QUAN',
+      type: "group",
+      label: "TỔNG QUAN",
       children: [
         {
-          key: '/admin',
+          key: "/admin",
           icon: <DashboardOutlined />,
-          label: 'Dashboard',
+          label: "Dashboard",
         },
       ],
     },
 
     {
-      type: 'group',
-      label: 'QUẢN LÝ NỘI DUNG',
+      type: "group",
+      label: "QUẢN LÝ NỘI DUNG",
       children: [
         {
-          key: '/admin/profile',
+          key: "/admin/profile",
           icon: <UserOutlined />,
-          label: 'Thông tin cá nhân',
+          label: "Thông tin cá nhân",
         },
         {
-          key: '/admin/skills',
+          key: "/admin/skills",
           icon: <CodeOutlined />,
-          label: 'Kỹ năng',
+          label: "Kỹ năng",
         },
         {
-          key: '/admin/projects',
+          key: "/admin/projects",
           icon: <ProjectOutlined />,
-          label: 'Dự án',
+          label: "Dự án",
         },
       ],
     },
 
     {
-      type: 'group',
-      label: 'HỆ THỐNG',
+      type: "group",
+      label: "HỆ THỐNG",
       children: [
         {
-          key: '/admin/settings',
+          key: "/admin/settings",
           icon: <SettingOutlined />,
-          label: 'Cài đặt',
+          label: "Cài đặt",
         },
       ],
     },
-
-  ]
+  ];
 
   const getBreadcrumbItems = () => {
-
-    const path = location.pathname
+    const path = location.pathname;
 
     const items = [
       {
-        title: 'Trang chủ',
+        title: "Trang chủ",
       },
-    ]
+    ];
 
-    if (path === '/admin') {
+    if (path === "/admin") {
       items.push({
-        title: 'Dashboard',
-      })
+        title: "Dashboard",
+      });
     }
 
-    if (path === '/admin/profile') {
+    if (path === "/admin/profile") {
       items.push({
-        title: 'Quản lý nội dung',
-      })
+        title: "Quản lý nội dung",
+      });
 
       items.push({
-        title: 'Thông tin cá nhân',
-      })
+        title: "Thông tin cá nhân",
+      });
     }
 
-    if (path === '/admin/skills') {
+    if (path === "/admin/skills") {
       items.push({
-        title: 'Quản lý nội dung',
-      })
+        title: "Quản lý nội dung",
+      });
 
       items.push({
-        title: 'Kỹ năng',
-      })
+        title: "Kỹ năng",
+      });
     }
 
-    if (path === '/admin/projects') {
+    if (path === "/admin/projects") {
       items.push({
-        title: 'Quản lý nội dung',
-      })
+        title: "Quản lý nội dung",
+      });
 
       items.push({
-        title: 'Dự án',
-      })
+        title: "Dự án",
+      });
     }
 
-    if (path === '/admin/settings') {
+    if (path === "/admin/settings") {
       items.push({
-        title: 'Hệ thống',
-      })
+        title: "Hệ thống",
+      });
 
       items.push({
-        title: 'Cài đặt',
-      })
+        title: "Cài đặt",
+      });
     }
 
-    return items
-  }
+    return items;
+  };
+
+  const notifications = [
+    {
+      key: "1",
+      title: "Dự án mới",
+      description: "Bạn vừa thêm một dự án mới.",
+      time: "Vừa xong",
+    },
+
+    {
+      key: "2",
+      title: "Cập nhật kỹ năng",
+      description: "Danh sách kỹ năng đã được cập nhật.",
+      time: "5 phút trước",
+    },
+
+    {
+      key: "3",
+      title: "Thông tin cá nhân",
+      description: "Thông tin cá nhân đã được cập nhật.",
+      time: "10 phút trước",
+    },
+  ];
+
+  const notificationMenu = {
+    items: notifications.map((item) => ({
+      key: item.key,
+
+      label: (
+        <div
+          style={{
+            width: 320,
+            padding: "8px 4px",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 600,
+              marginBottom: 4,
+            }}
+          >
+            {item.title}
+          </div>
+
+          <div
+            style={{
+              color: "#64748b",
+              fontSize: 13,
+              marginBottom: 4,
+            }}
+          >
+            {item.description}
+          </div>
+
+          <div
+            style={{
+              color: "#94a3b8",
+              fontSize: 12,
+            }}
+          >
+            {item.time}
+          </div>
+        </div>
+      ),
+    })),
+  };
 
   const handleLogout = () => {
+    localStorage.removeItem("adminToken");
 
-  localStorage.removeItem(
-    'adminToken'
-  )
+    localStorage.removeItem("adminUser");
 
-  localStorage.removeItem(
-    'adminUser'
-  )
-
-  navigate('/admin/login')
-}
+    navigate("/admin/login");
+  };
 
   return (
     <Layout className="admin-layout">
-
       {/* SIDEBAR */}
 
       <Sider
@@ -171,12 +225,8 @@ function AdminLayout({ children }) {
         collapsed={collapsed}
         className="admin-sider"
       >
-
         <div className="admin-logo">
-
-          <div className="admin-logo-icon">
-            P
-          </div>
+          <div className="admin-logo-icon">P</div>
 
           {!collapsed && (
             <div className="admin-logo-text">
@@ -184,7 +234,6 @@ function AdminLayout({ children }) {
               <span>ADMIN</span>
             </div>
           )}
-
         </div>
 
         <Divider />
@@ -197,118 +246,74 @@ function AdminLayout({ children }) {
         />
 
         <div className="admin-sidebar-bottom">
-
           <Button
             type="text"
             icon={<LogoutOutlined />}
             className="logout-button"
             onClick={handleLogout}
           >
-            {!collapsed && 'Đăng xuất'}
+            {!collapsed && "Đăng xuất"}
           </Button>
-          
-
         </div>
-
       </Sider>
-
 
       {/* MAIN */}
 
       <Layout>
-
-
         {/* HEADER */}
 
         <Header className="admin-header">
-
           <div className="header-left">
-
             <Button
               type="text"
               className="collapse-button"
               onClick={() => setCollapsed(!collapsed)}
-              icon={
-                collapsed
-                  ? <MenuUnfoldOutlined />
-                  : <MenuFoldOutlined />
-              }
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             />
 
-            <div className="header-title">
-              Hệ thống quản trị Portfolio
-            </div>
-
+            <div className="header-title">Hệ thống quản trị Portfolio</div>
           </div>
 
-
           <div className="header-right">
-
-            <Badge
-              count={3}
-              size="small"
+            <Dropdown
+              menu={notificationMenu}
+              trigger={["click"]}
+              placement="bottomRight"
             >
-              <Button
-                type="text"
-                shape="circle"
-                icon={<BellOutlined />}
-              />
-            </Badge>
+              <Badge count={notifications.length} size="small" offset={[-2, 2]}>
+                <Button type="text" shape="circle" icon={<BellOutlined />} />
+              </Badge>
+            </Dropdown>
 
             <Divider type="vertical" />
 
             <div className="admin-user">
-
-              <Avatar
-                size={38}
-                icon={<UserOutlined />}
-              />
+              <Avatar size={38} icon={<UserOutlined />} />
 
               <div className="admin-user-info">
+                <strong>Admin</strong>
 
-                <strong>
-                  Admin
-                </strong>
-
-                <span>
-                  Quản trị viên
-                </span>
-
+                <span>Quản trị viên</span>
               </div>
-
             </div>
-
           </div>
-
         </Header>
-
 
         {/* CONTENT */}
 
         <Content className="admin-content">
-
           <div className="content-wrapper">
-
             <Breadcrumb
               items={getBreadcrumbItems()}
               className="admin-breadcrumb"
             />
 
-            <div className="page-content">
-
-              {children}
-
-            </div>
-
+            <div className="page-content">{children}</div>
           </div>
-
         </Content>
-
-
       </Layout>
-
     </Layout>
-  )
+  );
 }
 
-export default AdminLayout
+export default AdminLayout;
