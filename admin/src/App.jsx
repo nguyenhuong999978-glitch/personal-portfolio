@@ -6,65 +6,107 @@ import {
 
 import AdminLayout from './layouts/AdminLayout'
 
+import Dashboard from './pages/Dashboard'
 import Skills from './pages/Skills'
 import Projects from './pages/Projects'
-import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 
+import ProtectedRoute from './components/ProtectedRoute'
+
+
 function Profile() {
-  return <h1>Thông tin cá nhân</h1>
+  return (
+    <h1>
+      Thông tin cá nhân
+    </h1>
+  )
 }
+
 
 function Settings() {
-  return <h1>Cài đặt</h1>
+  return (
+    <h1>
+      Cài đặt
+    </h1>
+  )
 }
 
-function App() {
+
+function AdminPages() {
+
   return (
+    <AdminLayout>
+
+      <Routes>
+
+        <Route
+          index
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="profile"
+          element={<Profile />}
+        />
+
+        <Route
+          path="skills"
+          element={<Skills />}
+        />
+
+        <Route
+          path="projects"
+          element={<Projects />}
+        />
+
+        <Route
+          path="settings"
+          element={<Settings />}
+        />
+
+      </Routes>
+
+    </AdminLayout>
+  )
+}
+
+
+function App() {
+
+  return (
+
     <BrowserRouter>
 
-      <AdminLayout>
+      <Routes>
 
-        <Routes>
+        {/* =====================
+            LOGIN
+        ====================== */}
 
-          {/* LOGIN */}
+        <Route
+          path="/admin/login"
+          element={<Login />}
+        />
 
-          <Route
-            path="/admin/login"
-            element={<Login />}
-          />
 
-          <Route
-            path="/admin"
-            element={<Dashboard />}
-          />
+        {/* =====================
+            ADMIN
+        ====================== */}
 
-          <Route
-            path="/admin/profile"
-            element={<Profile />}
-          />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminPages />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/admin/skills"
-            element={<Skills />}
-          />
-
-          <Route
-            path="/admin/projects"
-            element={<Projects />}
-          />
-
-          <Route
-            path="/admin/settings"
-            element={<Settings />}
-          />
-
-        </Routes>
-
-      </AdminLayout>
+      </Routes>
 
     </BrowserRouter>
   )
 }
+
 
 export default App
